@@ -18,9 +18,9 @@ def exibir_opcoes():
           ''')
 #-----------------------------------------------  
 
-#cadastrar aluno
+#coletar os dados dos alunos
 alunos = []
-def cad_aluno():
+def coletar_dados_alunos():
     nome_aluno = input('Digite o seu nome: ')
     matricula_aluno = int(input('Digite a sua matricula: '))
     data_nasc_aluno = input('Digite a sua data de nascimento: ')
@@ -29,17 +29,27 @@ def cad_aluno():
     telefone_aluno = input('Digite o seu telefone: ')
     email_aluno = input('Digite o seu e-mail: ')
 
-    for aluno in alunos:
-        if aluno['matricula'] == matricula_aluno:
-            print(f'Erro: A matricula {matricula_aluno} já está cadastrada')
-            return #fazer validação em outra funçao
-
-    print(f"Aluno(a) {nome_aluno} cadastrado(a) com sucesso!")
-    aluno = {'nome': nome_aluno, 'matricula': matricula_aluno, 'data_nascimento': data_nasc_aluno, 'sexo': sexo_aluno, 'endereco': endereco_aluno, 'telefone': telefone_aluno, 'email': email_aluno}
-    alunos.append(aluno)
-    return aluno # esse tbm
+    aluno_dados = {'nome': nome_aluno, 'matricula': matricula_aluno, 'data_nascimento': data_nasc_aluno, 'sexo': sexo_aluno, 'endereco': endereco_aluno, 'telefone': telefone_aluno, 'email': email_aluno}
+    return aluno_dados 
 #-----------------------------------------------
 
+#validar se o aluno já está cadastrado
+def ver_aluno_existente(matricula_aluno):
+    for aluno in alunos:
+        if aluno['matricula'] == matricula_aluno:
+            return True
+    return False
+#-----------------------------------------------
+
+#cadastrar alunos
+def cad_alunos():
+    dados_alunos = coletar_dados_alunos()
+    if ver_aluno_existente(dados_alunos["matricula"]):
+            print(f"Erro: A matricula {dados_alunos['matricula']} já está cadastrada")
+            return
+    alunos.append(dados_alunos)
+    print(f'O aluno {dados_alunos['nome']} foi cadastrado com sucesso!')
+#-----------------------------------------------
 
 #responsavel por coletar dados dos professores
 professores = []
@@ -52,21 +62,11 @@ def coletar_dados_professores():
     telefone_prof = int(input('Digite o seu telefone: '))
     email_prof = input('Digite o seu e-mail: ')
 
-    if ver_prof_existente(email_prof):
-        print(f'Erro: O e-mail {email_prof} já está cadastrada')
-        return None
-
     professores_dados = {'nome': nome_prof, 'disciplinas': disciplina_prof, 'data_nascimento': data_nasc_prof, 'sexo': sexo_prof, 'endereco': endereco_prof, 'telefone': telefone_prof, 'email': email_prof}
-    cad_prof(professores_dados)
+    return professores_dados
 #-----------------------------------------------
 
-#cadastrar professores
-def cad_prof(professores_dados):
-    professores.append(professores_dados)
-    print(f"O docente {professores_dados["nome"]} foi cadastrado com sucesso!")
-#-----------------------------------------------
-
-#validação de professor
+#validação de cadastro
 def ver_prof_existente(email_prof):
     for professor in professores:
         if professor['email'] == email_prof:
@@ -74,20 +74,26 @@ def ver_prof_existente(email_prof):
     return False
 #-----------------------------------------------
 
-#cadastrar disciplinas
+#cadastrar professores
+def cad_prof():
+    dados_prof = coletar_dados_professores()
+    if ver_prof_existente(dados_prof["email"]):
+        print(f"Erro: O e-mail {dados_prof['email']} já está cadastrada")
+        return
+    professores.append(dados_prof)
+    print(f"O docente {dados_prof['nome']} foi cadastrado com sucesso!")
+#-----------------------------------------------
+
+#coletar dados das disciplinas
 disciplinas = []
-def cad_disciplina():
+def coletar_dados_disciplinas():
     nome_disc = input('Digite o nome da disciplina: ')
     cod_disc = input('Digite o código da disciplina: ')
-    if disciplina_existente(cod_disc):
-        print(f'A disciplina {nome_disc} já está cadastrada.')
-        return None
     carga_disc = int(input('Digite a carga horaria da disciplina: '))
     professores_disc = input('Digite o responsável pela disciplina: ')
-
-    #validação p verificar se ja ta cadastrada
+    
     print(f"Disciplina {nome_disc} cadastrada com sucesso!")
-    disciplina_dados = ({'nome': nome_disc, 'codigo': cod_disc, 'carga_horaria': carga_disc, 'professor': professores_disc})
+    disciplina_dados = {'nome': nome_disc, 'codigo': cod_disc, 'carga_horaria': carga_disc, 'professor': professores_disc}
     return disciplina_dados
 #-----------------------------------------------
 
@@ -98,19 +104,48 @@ def disciplina_existente(cod_disc):
             return True
    return False
 #-----------------------------------------------   
+
+#cadastrar disciplinas
+def cad_disciplina():
+    dados_disciplina = coletar_dados_disciplinas()
+    if disciplina_existente(dados_disciplina["codigo"]):
+        print(f'A disciplina {dados_disciplina['nome']} já está cadastrada.')
+        return 
+    disciplinas.append(dados_disciplina)
+    print(f'A disciplina {dados_disciplina["nome"]} foi cadastrada com sucesso!')
+#-----------------------------------------------  
   
-#cadastrar turmas
+#coletar dados da turma
 turmas = []
-def cad_turmas():
+def coletar_dados_turmas():
     nome_turma = input('Digite o nome da turma: ')
     cod_turma = input('Digite o código da turma: ')
     disciplina_turma = input('Digite as disciplinas da turma: ')
     professor_turma = input('Digite o professor da turma: ')
     # alunos_turma = (lista_matricula)
-
-    print(f"Turma {nome_turma} cadastrada com sucesso!")
-    turmas.append({'nome': nome_turma, 'codigo': cod_turma, 'disciplina': disciplina_turma, 'professor': professor_turma, 'alunos': []})
+    turma_dados = {'nome': nome_turma, 'codigo': cod_turma, 'disciplina': disciplina_turma, 'professor': professor_turma, 'alunos': []}
+    return turma_dados
 #-----------------------------------------------
+
+#verificar se a turma ja esta cadastrada
+def turma_existente(cod_turma):
+    for turma in turmas:
+        if turma['codigo'] == cod_turma:
+            return True
+    return False
+#-----------------------------------------------
+
+#cadastrar turma
+def cad_turma():
+    dados_turma = coletar_dados_turmas()
+    if turma_existente(dados_turma["codigo"]):
+        print(f'A disciplina {dados_turma['nome']} já está cadastrada!')
+        return
+    turmas.append(dados_turma)
+    print(f'A turma {dados_turma["nome"]} foi cadastrada com sucesso!')
+
+#-----------------------------------------------s
+
 
 #filtrar os professores por disciplina
 def filtrar_prof_disciplina():
@@ -121,7 +156,7 @@ def filtrar_prof_disciplina():
         for prof in professores_filt:
             print(f"- {prof['nome']}")
     else:
-        print(f"Nenhum professor foi encontrado para a disciplina {disciplina_filt}")
+        print(f"Nenhum professor cadastrado foi encontrado para a disciplina {disciplina_filt}")
 #-----------------------------------------------
 
 #matricular aluno em turmas
@@ -157,11 +192,23 @@ def alocar_prof_dsc():
             professor_encontrado_dsc = professor
             break
     if professor_encontrado_dsc:
+        if not disciplina_foi_cad(dsc_nome):
+            print('A disciplina não está cadastrada.')
+            return
         professor_encontrado_dsc['disciplinas'].append(dsc_nome)
         print(f'Professor {professor_nome} alocado para a disciplina {dsc_nome}')
     else:
         print('professor não encontrado.')
 #-----------------------------------------------
+
+#validação pra conferir se a disciplina esta cadastrada
+def disciplina_foi_cad(disciplina_nome):
+        disciplina_encontrada = False
+        for disciplina in disciplinas:
+            if disciplina["nome"].lower() == disciplina_nome.lower():
+                disciplina_encontrada = True
+                break
+        return disciplina_encontrada
 
 #disciplinas alocadas em turma
 def alocar_disc_turma():
@@ -173,9 +220,18 @@ def alocar_disc_turma():
         if turma['codigo'].lower() == turma_cod_dsc.lower():
             turma_encontrada = turma
             break
+        
     if turma_encontrada:
-        turma_encontrada['disciplina'] = disciplina_nome
-        print(f'Disciplina {disciplina_nome} alocada para a turma {turma_encontrada["nome"]} com sucesso!!') #arrumar aqui, ele ta substituindo a chave, e o ideal seria adicionar
+        if not disciplina_foi_cad(disciplina_nome):
+            print('A disciplina não está cadastrada.')
+            return
+        if disciplina_nome not in turma_encontrada["disciplina"]:
+            turma_encontrada['disciplinas'] = []  
+        if disciplina_nome not in turma_encontrada["disciplinas"]:
+            turma_encontrada["disciplinas"].append(disciplina_nome)
+            print(f'Disciplina {disciplina_nome} foi alocada para a turma {turma_encontrada["nome"]} com sucesso!')
+        else:
+                print(f'A disciplina {disciplina_nome} já está alocada nessa turma.')
     else:
         print('Turma não encontrada.')
 #-----------------------------------------------
@@ -207,7 +263,7 @@ def consultar_dsc_turmas():
     if turmas:
         print('Disciplinas cadastradas nas turmas:')
         for turma in turmas:
-            print(f'Turmas: {turma["nome"]} - Disciplina: {turma["disciplina"]}')
+            print(f'Turmas: {turma["nome"]} - Disciplina: {turma["disciplina"]}, {turma["disciplinas"]}')
 #-----------------------------------------------
 
 #consultar profs em disciplinas
@@ -225,14 +281,12 @@ def consultar_prof_dsc():
 #funcao pra consultar alunos em turmas
 def consultar_alunos_turmas():
     if turmas:
-        print('Alinos matriculados nas turmas:')
+        print('Alunos matriculados nas turmas:')
         for turma in turmas:
             print(f'Turma: {turma["nome"]} - Codigo: {turma["codigo"]}')
             if turma["alunos"]:
-                for aluno_matricula in turma["alunos"]:
-                     aluno_encontrado = next((aluno for aluno in alunos if aluno['matricula'] == aluno_matricula), None)
-                     if aluno_encontrado:
-                        print(f"- {aluno_encontrado['nome']} (Matrícula: {aluno_encontrado['matricula']})")
+                for aluno in turma["alunos"]:
+                        print(f"- {aluno['nome']} (Matricula: {aluno['matricula']})")
             else:
                 print('Nenhum aluno matriculado.')
     else:
@@ -246,13 +300,13 @@ def executar():
         opcao = int(input('Escolha uma opção (em numeros.) '))
 
         if opcao == 1:
-            cad_aluno()
+            cad_alunos()
         elif opcao == 2:
-            coletar_dados_professores()
+            cad_prof()
         elif opcao == 3:
             cad_disciplina()
         elif opcao == 4:
-            cad_turmas()
+            cad_turma()
         elif opcao == 5:
             filtrar_prof_disciplina()
         elif opcao == 6:
